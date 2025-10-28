@@ -2,91 +2,451 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Codex of the Eternal Grind</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- include jQuery and Turn.js -->
+  <title>Codex of the Eternal Grind</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
   <style>
-    body {
-      background-color: #111;
-      margin: 0;
-      color: #ddd;
-      font-family: 'Georgia', serif;
+    :root {
+      color-scheme: dark;
+      --bg: radial-gradient(circle at top, rgba(229, 46, 113, 0.08), transparent 60%), #05060a;
+      --page-overlay: rgba(12, 9, 5, 0.55);
+      --text-primary: #f6f1e1;
+      --text-secondary: rgba(246, 241, 225, 0.78);
+      --accent: #c9a862;
+      --accent-strong: #ffe29f;
+      --codex-cover: url('assets/codex/codex-cover.jpg');
+      --codex-page: url('assets/codex/codex-page.jpg');
+      --codex-back: url('assets/codex/codex-back.jpg');
     }
-    #flipbook {
-      width: 850px;
-      height: 600px;
-      margin: 50px auto;
-      /* binding shadow */
-      box-shadow: 0 0 20px rgba(0,0,0,0.8);
-    }
-    #flipbook .page {
-      background: #222 url('images/parchment‑texture.jpg') no-repeat center center;
-      background-size: cover;
-      color: #f5f1e8;
-      padding: 40px;
+
+    * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
+
+    body {
+      background: var(--bg);
+      font-family: 'Crimson Text', serif;
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 16px;
+    }
+
+    header {
+      width: min(1080px, 100%);
+      margin-bottom: 36px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .title-block h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.4rem, 4vw, 3.1rem);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .title-block p {
+      margin-top: 8px;
+      color: var(--text-secondary);
+      max-width: 540px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      transition: transform 200ms ease, border-color 200ms ease;
+      font-size: 0.95rem;
+    }
+
+    .back-link::before {
+      content: '←';
+      font-size: 1.2rem;
+      color: var(--accent-strong);
+    }
+
+    .back-link:hover,
+    .back-link:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .codex-wrapper {
+      width: min(1080px, 100%);
+      background: linear-gradient(160deg, rgba(12, 12, 18, 0.82), rgba(8, 7, 10, 0.65));
+      padding: 32px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(12px);
+    }
+
+    #flipbook {
+      margin: 0 auto;
+      width: 900px;
+      height: 600px;
+    }
+
+    #flipbook .page,
     #flipbook .hard {
-      background: #333 url('images/hardcover‑texture.jpg') no-repeat center center;
+      width: 450px;
+      height: 600px;
+      position: relative;
+      background-position: center;
       background-size: cover;
-      color: #eee;
-      font-size: 1.4em;
-      text-align: center;
-      line-height: 560px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
     }
+
+    #flipbook .page {
+      display: flex;
+      align-items: stretch;
+      background-image: var(--codex-page);
+      color: var(--text-secondary);
+    }
+
+    #flipbook .page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--page-overlay);
+      mix-blend-mode: multiply;
+      pointer-events: none;
+    }
+
+    #flipbook .page::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(0, 0, 0, 0.15), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.12));
+      pointer-events: none;
+    }
+
+    #flipbook .page-content,
+    #flipbook .hard .hard-content {
+      position: relative;
+      z-index: 1;
+      padding: 48px 56px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    #flipbook .hard {
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #flipbook .hard.cover {
+      background-image: var(--codex-cover);
+    }
+
+    #flipbook .hard.cover::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 18%, rgba(255, 232, 180, 0.25), transparent 55%),
+        radial-gradient(circle at 80% 85%, rgba(255, 194, 125, 0.18), transparent 60%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    #flipbook .hard.back {
+      background-image: var(--codex-back);
+    }
+
+    #flipbook .hard.back::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 12% 16%, rgba(255, 208, 140, 0.2), transparent 55%),
+        radial-gradient(circle at 78% 78%, rgba(255, 210, 160, 0.16), transparent 60%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
     h2.chapter {
-      margin-top: 0;
+      font-family: 'Cinzel', serif;
+      color: var(--accent-strong);
+      font-size: 1.4rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
       text-align: center;
-      font-size: 2em;
-      letter-spacing: .1em;
-      color: #fafafa;
+      margin-bottom: 26px;
     }
+
     p.verse {
-      margin: 0.8em 0;
+      margin-bottom: 14px;
+      font-size: 1.05rem;
+      line-height: 1.7;
     }
+
     p.verse strong {
-      color: #c9b37e;
+      color: var(--accent);
+      font-weight: 600;
+      margin-right: 6px;
+      letter-spacing: 0.12em;
+    }
+
+    .page-title .chapter {
+      margin-bottom: 12px;
+    }
+
+    .page-title .subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.18em;
+      color: rgba(255, 239, 207, 0.8);
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .page-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      list-style: none;
+    }
+
+    .page-list li {
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .page-list span {
+      color: rgba(255, 232, 205, 0.75);
+    }
+
+    .page-footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.85rem;
+      color: rgba(246, 241, 225, 0.55);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .codex-notes {
+      margin-top: 28px;
+      font-size: 0.9rem;
+      color: rgba(246, 241, 225, 0.5);
+      text-align: center;
+    }
+
+    @media (max-width: 1200px) {
+      #flipbook {
+        width: 720px;
+        height: 480px;
+      }
+
+      #flipbook .page,
+      #flipbook .hard {
+        width: 360px;
+        height: 480px;
+      }
+
+      #flipbook .page-content,
+      #flipbook .hard .hard-content {
+        padding: 40px;
+      }
+    }
+
+    @media (max-width: 860px) {
+      body {
+        padding: 40px 12px;
+      }
+
+      .codex-wrapper {
+        padding: 20px;
+      }
+
+      #flipbook {
+        width: 520px;
+        height: 360px;
+      }
+
+      #flipbook .page,
+      #flipbook .hard {
+        width: 260px;
+        height: 360px;
+      }
+
+      #flipbook .page-content,
+      #flipbook .hard .hard-content {
+        padding: 28px;
+      }
+
+      h2.chapter {
+        font-size: 1.1rem;
+      }
+
+      p.verse {
+        font-size: 0.95rem;
+      }
+    }
+
+    @media (max-width: 580px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .back-link {
+        align-self: stretch;
+        justify-content: center;
+      }
+
+      #flipbook {
+        width: 320px;
+        height: 420px;
+      }
+
+      #flipbook .page,
+      #flipbook .hard {
+        width: 320px;
+        height: 420px;
+      }
+
+      #flipbook .page-content,
+      #flipbook .hard .hard-content {
+        padding: 32px 26px;
+      }
     }
   </style>
 </head>
 <body>
+  <header>
+    <div class="title-block">
+      <h1>Codex of the Eternal Grind</h1>
+      <p>Flip through the living doctrine of our Bitcraft order. These sample pages preview the structure for chapters, verses, and rituals you can expand with your own community lore.</p>
+    </div>
+    <a class="back-link" href="index.html">Return to the Shrine</a>
+  </header>
 
-<div id="flipbook">
-  <div class="hard">Codex of the Eternal Grind</div>
-  <div class="hard"></div>
+  <div class="codex-wrapper">
+    <div id="flipbook">
+      <div class="hard cover" aria-label="Front cover of the Codex of the Eternal Grind"></div>
 
-  <!-- Page content sample -->
-  <div class="page">
-    <h2 class="chapter">Chapter I</h2>
-    <p class="verse"><strong>I:1</strong> The grind is not a goal. It is the ground beneath us. Step steady. Build true. All Hail the Grind.</p>
-    <p class="verse"><strong>I:2</strong> The grind is not work—it is the way. The hands change. The work remains.</p>
-    <!-- more verses... -->
+      <div class="page page-title">
+        <div class="page-content">
+          <h2 class="chapter">Codex of The Grind</h2>
+          <p class="subtitle">Doctrine Volume I</p>
+          <p class="verse"><strong>Foreword</strong> Transcribe the sacred labors of your settlement here. Each line can echo a spreadsheet row, letting your doctrine live both in ledger and lore.</p>
+          <ul class="page-list">
+            <li><span>Table Alpha</span><span>Founder's Charge</span></li>
+            <li><span>Table Beta</span><span>Crafting Tenets</span></li>
+            <li><span>Table Gamma</span><span>Ritual Sequences</span></li>
+            <li><span>Table Delta</span><span>Guild Signatories</span></li>
+          </ul>
+          <div class="page-footer">Structure inspired by your doctrine spreadsheet</div>
+        </div>
+      </div>
+
+      <div class="page">
+        <div class="page-content">
+          <h2 class="chapter">Prologue</h2>
+          <p class="verse"><strong>P:1</strong> In the beginning there was only motion. From motion came purpose, and from purpose came The Grind.</p>
+          <p class="verse"><strong>P:2</strong> We gathered around empty worktables and declared every craft a prayer.</p>
+          <p class="verse"><strong>P:3</strong> Let this codex guide every settler who chooses to build with intention.</p>
+          <div class="page-footer">Inscribed at the founding forge</div>
+        </div>
+      </div>
+
+      <div class="page">
+        <div class="page-content">
+          <h2 class="chapter">Chapter I</h2>
+          <p class="verse"><strong>I:1</strong> The grind is not a goal. It is the ground beneath us. Step steady. Build true.</p>
+          <p class="verse"><strong>I:2</strong> The grind is not work&mdash;it is the way. The hands change. The work remains.</p>
+          <p class="verse"><strong>I:3</strong> No ruler, no season, no empire outlasts the Grind.</p>
+          <p class="verse"><strong>I:4</strong> Today&rsquo;s task is not the final task. Today&rsquo;s stone is not the last stone. Yet still we lay it.</p>
+        </div>
+      </div>
+
+      <div class="page">
+        <div class="page-content">
+          <h2 class="chapter">Chapter II</h2>
+          <p class="verse"><strong>II:1</strong> Teach every new hand the rhythm of the workshop so that no verse is lost to silence.</p>
+          <p class="verse"><strong>II:2</strong> Record the blueprints of our triumphs and the lessons of our failures.</p>
+          <p class="verse"><strong>II:3</strong> Share tools freely. Hoarded craft is hollow craft.</p>
+          <div class="page-footer">Marginal Note: Include guild signatures here.</div>
+        </div>
+      </div>
+
+      <div class="page">
+        <div class="page-content">
+          <h2 class="chapter">Ritual Appendix</h2>
+          <p class="verse"><strong>R:1</strong> Opening Chant &mdash; Begin every gathering with gratitude for the materials bestowed.</p>
+          <p class="verse"><strong>R:2</strong> Nightly Vigil &mdash; Assign a keeper to record the day&rsquo;s accomplishments before rest.</p>
+          <p class="verse"><strong>R:3</strong> Oath of Renewal &mdash; At sunrise, select a task to improve upon yesterday&rsquo;s work.</p>
+          <div class="page-footer">Add custom rites for your settlement</div>
+        </div>
+      </div>
+
+      <div class="page page-notes">
+        <div class="page-content">
+          <h2 class="chapter">Scribe&rsquo;s Notes</h2>
+          <p class="verse"><strong>S:1</strong> Replace these sample passages with entries from your doctrine sheet. Each paragraph can mirror a row while the numbering follows your preferred citation format.</p>
+          <p class="verse"><strong>S:2</strong> Add or duplicate pages as your spreadsheet grows. Maintain paired spreads so the book continues to turn cleanly.</p>
+          <p class="verse"><strong>S:3</strong> Swap the imagery in <code>assets/codex/</code> once your artwork is ready to match the cover, parchment, and back design shared above.</p>
+          <div class="page-footer">Record amendments, revisions, and appendices here</div>
+        </div>
+      </div>
+
+      <div class="hard back" aria-label="Back cover of the Codex of the Eternal Grind"></div>
+    </div>
+    <p class="codex-notes">Tip: Replace the placeholder text with your own doctrine and drop the provided cover, parchment, and back artwork into <code>assets/codex/</code> using the matching filenames.</p>
   </div>
 
-  <div class="page">
-    <p class="verse"><strong>I:3</strong> No ruler, no season, no empire outlasts the Grind.</p>
-    <p class="verse"><strong>I:4</strong> Today’s task is not the final task. Today’s stone is not the last stone. But still we lay it.</p>
-  </div>
+  <script>
+    function initFlipbook() {
+      const $flipbook = $("#flipbook");
+      if ($flipbook.width() > 0) {
+        $flipbook.turn({
+          autoCenter: true,
+          gradients: true,
+          duration: 900,
+          elevation: 40
+        });
+      }
+    }
 
-  <!-- add pages for each chapter/verses -->
-  
-  <div class="hard"></div>
-  <div class="hard"></div>
-</div>
-
-<script>
-  $(document).ready(function(){
-    $("#flipbook").turn({
-      width: 850,
-      height: 600,
-      autoCenter: true,
-      displays: 'double',
-      acceleration: true
+    $(window).on('load', initFlipbook);
+    $(window).on('resize orientationchange', function () {
+      const $flipbook = $("#flipbook");
+      if ($flipbook.data('turn')) {
+        $flipbook.turn('destroy');
+      }
+      initFlipbook();
     });
-  });
-</script>
-
+  </script>
 </body>
 </html>
