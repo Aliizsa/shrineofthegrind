@@ -1150,14 +1150,14 @@ input, select, textarea {
 		}
 
 		#bg:after {
-    transform: scale(1.125);
-    transition: transform 0.325s ease-in-out, filter 0.325s ease-in-out;
-    background-image: url("../../images/aurora-upscaler-creative_-0.jpg");
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    filter: brightness(0.75) saturate(0.9);
-    z-index: 1;
+	transform: scale(1.125);
+	transition: transform 0.325s ease-in-out, filter 0.325s ease-in-out;
+	background-image: url("../../images/aurora-upscaler-creative_-0.jpg");
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	filter: brightness(0.75) saturate(0.9);
+	z-index: 1;
 }
 		}
 
