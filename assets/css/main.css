@@ -1159,7 +1159,6 @@ input, select, textarea {
 	filter: brightness(0.75) saturate(0.9);
 	z-index: 1;
 }
-		}
 
 		body.is-article-visible #bg:after {
 			-moz-transform: scale(1.0825);
